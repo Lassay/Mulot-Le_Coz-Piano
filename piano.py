@@ -4,33 +4,28 @@
 import sys
 if sys.version_info.major == 2:
     print(sys.version)
-    from Tkinter import Tk,Frame,Button,Label
+    from Tkinter import *
     import tkFileDialog as filedialog
 else:
     print(sys.version)
-    from tkinter import Tk,Frame,Button,Label
+    from tkinter import *
     from tkinter import filedialog
 
 import collections
 
+
 from observer  import *
-
-print("Génération des notes du piano")
-
-from frequencies import *
-
-from wav_create_notes_from_frequencies_db import *
 
 import subprocess
 #import sys
 #sys.path.append("./Sounds")
 
 class Octave(Subject) :
-    def __init__(self,degree) :
+    def __init__(self,degree=3) :
         Subject.__init__(self)
         self.degree=degree
         self.set_gamme(degree)
-    def set_gamme(self,degree) :
+    def set_gamme(self,degree=3) :
         self.degree=degree
         folder="Sounds"
         notes=["C","D","E","F","G","A","B","C#","D#","F#","G#","A#"]
@@ -51,7 +46,7 @@ class Screen(Observer):
         self.parent=parent
         self.create_screen()
     def create_screen(self) :
-        self.screen=Frame(self.parent,borderwidth=5,width=500,height=160,bg="pink")
+        self.screen=Frame(self.parent,borderwidth=5,width=800,height=160,bg="pink")
         self.info=Label(self.screen,text="Appuyez sur une touche clavier ", bg="pink",font=('Arial',10))
         self.info.pack()
     def get_screen(self) :
@@ -106,7 +101,7 @@ class Piano :
         self.frame=Frame(self.parent,bg="yellow")
         for octave in range(octaves) :
             self.create_octave(self.frame,octave+2)
-    def create_octave(self,parent,degree) :
+    def create_octave(self,parent,degree=3) :
         frame=Frame(parent,bg="green")
         model=Octave(degree)
         self.octaves.append(model)
@@ -119,12 +114,59 @@ class Piano :
     def packing(self) :
         self.frame.pack()
 
+class choix :
+    def __init__(self,parent) :
+        self.parent=parent
+        self.frame=Frame(self.parent)
+        self.label_Choix=Label(self.parent, text="Choisissez une note à créer :")
+        
+        self.entryNote=Entry(self.frame)
+        self.labelNote=Label(self.frame, text="Note :")
+        self.num = 0
+        self.labelNum=Label(self.frame, text="Octave :")
+        self.boiteNum = Spinbox(self.frame,from_=0,to=3,increment=1,textvariable=self.num,width=5)
+        self.listeNote = ('C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B')
+        self.v = StringVar()
+        self.v.set(self.listeNote[0])
+        self.boxNote = OptionMenu(self.frame, self.v, *self.listeNote)
+        self.labelDuree=Label(self.frame, text="Durée :")
+        self.duration=Scale(self.frame, orient='horizontal', from_=0, to=4,
+                            resolution=0.1, tickinterval=1, length=150)
+        
+        self.creer=Button(self.frame, text="créer", command=self.creerNote)
+        self.label1=Label(self.frame, text="Note créée :")
+        self.label2=Label(self.frame, text='...')
+
+        self.lire=Button(self.frame, text="Lire")
+
+    def creerNote(self):
+        self.label2.configure(text=str(self.v.get())+str(self.boiteNum.get())+"_"+str(self.duration.get()))
+
+    #def lireNote(self):
+        #subprocess.call(["aplay",(str(self.v.get())+str(self.boiteNum.get())+"_"+str(self.duration.get())) ])
+
+
+    def packing(self):
+        self.label_Choix.pack()
+        self.frame.pack()
+        self.labelNote.grid(row=0, pady=2, padx=5)
+        self.boxNote.grid(row=0, column = 1, pady=2, padx=5)
+        self.labelNum.grid(row=1, column = 0, pady=2, padx=5)
+        self.boiteNum.grid(row=1, column = 1, pady=2,padx=5)
+        self.labelDuree.grid(row=2, column = 0, pady=2, padx=5)
+        self.duration.grid(row=2, column = 1, pady=2, padx=5)
+        self.creer.grid(row=1, column = 3,pady=2, padx=5)
+        self.label1.grid(row=1, column = 4, pady=2, padx=5)
+        self.label2.grid(row=1, column = 5, pady=2, padx=5)
+        self.lire.grid(row=1, column = 6, pady=2, padx=5)
 
 if __name__ == "__main__" :
     root = Tk()
-    root.geometry("560x300")
-    octaves=4
+    root.geometry("700x400")
+    octaves=2
     root.title("La leçon de piano à "+ str(octaves) + " octaves")
+    new=choix(root)
+    new.packing()
     piano=Piano(root,octaves)
     piano.packing()
     root.mainloop()
