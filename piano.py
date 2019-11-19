@@ -2,6 +2,8 @@
 # https://stackoverflow.com/questions/34522095/gui-button-hold-down-tkinter
 
 import sys
+import os
+
 if sys.version_info.major == 2:
     print(sys.version)
     from Tkinter import *
@@ -15,14 +17,13 @@ import collections
 
 from observer  import *
 
-print("Génération des notes du piano")
-
-from frequencies import *
-
-from wav_create_notes_from_frequencies_db import *
+if(not(os.path.exists('./Sounds/B8.wav'))):
+    print("Génération des notes du piano .wav")
+    from frequencies import *
+    from wav_create_notes_from_frequencies_db import *
 
 import subprocess
-#import sys
+
 #sys.path.append("./Sounds")
 
 class Octave(Subject) :
@@ -124,7 +125,7 @@ class choix :
         self.parent=parent
         self.frame=Frame(self.parent)
         self.label_Choix=Label(self.parent, text="Choisissez une note à créer :")
-        
+
         self.entryNote=Entry(self.frame)
         self.labelNote=Label(self.frame, text="Note :")
         self.num = 0
@@ -137,7 +138,7 @@ class choix :
         self.labelDuree=Label(self.frame, text="Durée :")
         self.duration=Scale(self.frame, orient='horizontal', from_=0, to=4,
                             resolution=0.1, tickinterval=1, length=150)
-        
+
         self.creer=Button(self.frame, text="créer", command=self.creerNote)
         self.label1=Label(self.frame, text="Note créée :")
         self.label2=Label(self.frame, text='...')
