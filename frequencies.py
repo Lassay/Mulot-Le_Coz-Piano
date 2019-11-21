@@ -27,7 +27,7 @@ for i in range(-1,9):
     octave=[]
     octave.append(i)
     for j in range (-9,3) :
-        frequency=f0*2**(j/12)
+        frequency=f0*2**(j/12.0)
         octave.append(frequency)
     frequencies.append(octave)
     f0=f0*2
