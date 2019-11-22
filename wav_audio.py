@@ -86,10 +86,10 @@ def wav_sinus(file ='sinus.wav',f=440,framerate=8000,duration=2):
     save_wav(file,data,framerate)
     return data
 
-if  __name__ == "__main__" :
-    wav_sinus('A2.wav',220,8000,1)
-    wav_sinus('A3.wav',440,8000,1)
-    subprocess.call(["aplay", "A2.wav"])
-    subprocess.call(["aplay", "A3.wav"])
-    data,framerate=open_wav("A2.wav")
-    print(framerate,data[0],data[1])
+#if  __name__ == "__main__" :
+#    wav_sinus('A2.wav',220,8000,1)
+#    wav_sinus('A3.wav',440,8000,1)
+#    subprocess.call(["aplay", "A2.wav"])
+#    subprocess.call(["aplay", "A3.wav"])
+#    data,framerate=open_wav("A2.wav")
+#    print(framerate,data[0],data[1])
