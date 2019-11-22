@@ -166,7 +166,7 @@ class choix :
         
         f = cursor.execute("SELECT {0} FROM frequencies WHERE octave = {1}".format(self.v.get()[0], int(self.boiteNum.get()))).fetchone()
         print(f[0])
-        x = wav_sinus("./noteCréée/"+self.titre, f[0], 8000, int(self.duration.get()))
+        x = wav_sinus("./noteCréée/"+self.titre, f[0], 8000, float(self.duration.get()))
 
     def lireNote(self):
         subprocess.call(["aplay", "./noteCréée/"+self.titre])
