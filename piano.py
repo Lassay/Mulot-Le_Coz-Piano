@@ -4,6 +4,8 @@
 import sys
 import os
 
+import sqlite3
+
 if sys.version_info.major == 2:
     print(sys.version)
     from Tkinter import *
@@ -19,8 +21,11 @@ from observer  import *
 
 if(not(os.path.exists('./Sounds/B8.wav'))):
     print("Génération des notes du piano .wav")
-    from frequencies import *
     from wav_create_notes_from_frequencies_db import *
+
+from frequencies import *
+
+from wav_audio import *
 
 import subprocess
 
@@ -130,7 +135,7 @@ class choix :
         self.labelNote=Label(self.frame, text="Note :")
         self.num = 0
         self.labelNum=Label(self.frame, text="Octave :")
-        self.boiteNum = Spinbox(self.frame,from_=0,to=3,increment=1,textvariable=self.num,width=5)
+        self.boiteNum = Spinbox(self.frame,from_=0,to=8,increment=1,textvariable=self.num,width=5)
         self.listeNote = ('C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B')
         self.v = StringVar()
         self.v.set(self.listeNote[0])
@@ -138,19 +143,33 @@ class choix :
         self.labelDuree=Label(self.frame, text="Durée :")
         self.duration=Scale(self.frame, orient='horizontal', from_=0, to=4,
                             resolution=0.1, tickinterval=1, length=150)
+        self.titre = ''
 
         self.creer=Button(self.frame, text="créer", command=self.creerNote)
         self.label1=Label(self.frame, text="Note créée :")
         self.label2=Label(self.frame, text='...')
 
-        self.lire=Button(self.frame, text="Lire")
+        self.lire=Button(self.frame, text="Lire", command=self.lireNote)
+
 
     def creerNote(self):
-        self.label2.configure(text=str(self.v.get())+str(self.boiteNum.get())+"_"+str(self.duration.get()))
+        self.titre = titre = str(self.v.get())+str(self.boiteNum.get())+"_"+str(self.duration.get())+".wav"
+        self.label2.configure(text=self.titre)
+        connect = sqlite3.connect("frequencies.db")
+        cursor = connect.cursor()
 
-    #def lireNote(self):
-        #subprocess.call(["aplay",(str(self.v.get())+str(self.boiteNum.get())+"_"+str(self.duration.get())) ])
+        # Gerer les sharp :
+        #if (self.v.get() == 'C#' or 'D#' or 'F#' or 'G#' or 'A#'):
+        #    f = cursor.execute("SELECT {0}{1} FROM frequencies WHERE octave = {2}".format(self.v.get()[0], "sharp", int(self.boiteNum.get()))).fetchone()
+        #else:
+        
+        f = cursor.execute("SELECT {0} FROM frequencies WHERE octave = {1}".format(self.v.get()[0], int(self.boiteNum.get()))).fetchone()
+        print(f[0])
+        x = wav_sinus("./noteCréée/"+self.titre, f[0], 8000, int(self.duration.get()))
 
+    def lireNote(self):
+        subprocess.call(["aplay", "./noteCréée/"+self.titre])
+        
 
     def packing(self):
         self.label_Choix.pack()
