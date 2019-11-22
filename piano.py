@@ -160,12 +160,11 @@ class choix :
         cursor = connect.cursor()
 
         # Gerer les sharp :
-        #if (self.v.get() == 'C#' or 'D#' or 'F#' or 'G#' or 'A#'):
-        #    f = cursor.execute("SELECT {0}{1} FROM frequencies WHERE octave = {2}".format(self.v.get()[0], "sharp", int(self.boiteNum.get()))).fetchone()
-        #else:
+        if (self.v.get() == 'C#' or self.v.get() == 'D#' or self.v.get() == 'F#' or self.v.get() == 'G#' or self.v.get() == 'A#'):
+            f = cursor.execute("SELECT {0}{1} FROM frequencies WHERE octave = {2}".format(self.v.get()[0], "sharp", int(self.boiteNum.get()))).fetchone()
+        else:
+            f = cursor.execute("SELECT {0} FROM frequencies WHERE octave = {1}".format(self.v.get(), int(self.boiteNum.get()))).fetchone()
         
-        f = cursor.execute("SELECT {0} FROM frequencies WHERE octave = {1}".format(self.v.get()[0], int(self.boiteNum.get()))).fetchone()
-        print(f[0])
         x = wav_sinus("./noteCréée/"+self.titre, f[0], 8000, float(self.duration.get()))
 
     def lireNote(self):
