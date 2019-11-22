@@ -21,6 +21,7 @@ from observer  import *
 
 if(not(os.path.exists('./Sounds/B8.wav'))):
     print("Génération des notes du piano .wav")
+    from frequencies import *
     from wav_create_notes_from_frequencies_db import *
 
 from frequencies import *
