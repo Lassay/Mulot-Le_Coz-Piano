@@ -5,21 +5,21 @@ from math import sin,pi
 import sys
 if sys.version_info.major == 2:
     print(sys.version)
-    from Tkinter import Tk,Canvas
+    from Tkinter import *
     import tkFileDialog as filedialog
 else:
     print(sys.version)
-    from tkinter import Tk,Canvas
+    from tkinter import *
     from tkinter import filedialog
 
-class View :
-    def __init__(self,parent,bg="white",width=600,height=300):
-        self.canvas=Canvas(parent,bg=bg,width=width,height=height)
+
+from observer import *
+
+class Generator(Subject) :
+    def __init__(self):
         self.a,self.f,self.p=1.0,2.0,0.0
         self.signal=[]
-        self.width,self.height=width,height
-        self.units=1
-        self.canvas.bind("<Configure>",self.resize)
+        self.observers=[]
     def vibration(self,t,harmoniques=1,impair=True):
         a,f,p=self.a,self.f,self.p
         f=1.0
@@ -35,10 +35,23 @@ class View :
         for t in echantillons :
             self.signal.append([t*Tech,self.vibration(t*Tech)])
         print(self.signal)
+        self.notify()
         return self.signal
+    def notify(self):
+        for obs in self.observers:
+            obs.update()
+
+
+class Screen(Observer) :
+    def __init__(self,parent,bg="white",width=600,height=300):
+        self.canvas=Canvas(parent,bg=bg,width=width,height=height)
+        self.signal={}
+        self.units=1
+        self.width,self.height=width,height
+        self.canvas.bind("<Configure>",self.resize)
     def update(self):
         print("View : update()")
-        self.generate_signal()
+        #Generator.generate_signal(Generator)
         if self.signal :
             self.plot_signal(self.signal)
     def plot_signal(self,signal,color="red"):
@@ -72,11 +85,38 @@ class View :
     def packing(self) :
         self.canvas.pack(expand=1,fill="both",padx=6)
 
+class Controller :
+    def __init__(self,parent,model,view) :
+        self.model=model
+        self.view=view
+        self.create_controls(parent)
+
+    def create_controls(self,parent) :
+        self.frame=LabelFrame(parent,text='Signal')
+        self.amp=IntVar()
+        self.amp.set(1)
+        self.scaleA=Scale(self.frame,variable=self.amp,label="Amplitude",orient="horizontal",length=250,\
+                            from_=0,to=5,tickinterval=1)
+        self.scaleA.bind("<Button-1>",self.update_magnitude)
+
+    def update_magnitude(self,event) :
+        self.model.set_magnitude(self.amp.get())
+        self.model.generate_signal()
+
+    def packing(self) :
+        self.frame.pack()
+
 if  __name__ == "__main__" :
     root=Tk()
-    root.title("Piano : Nom-Prenom")
-    view=View(root)
+    root.title("Piano : Mulot Le Coz")
+    model=Generator()
+    view=Screen(root)
     view.grid(4)
+
+    model.attach(view)
+    model.generate_signal()
+    ctrl=Controller(root,model,view)
     view.packing()
-    view.update()
+    ctrl.packing()
+
     root.mainloop()
