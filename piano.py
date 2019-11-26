@@ -208,7 +208,14 @@ if __name__ == "__main__" :
     MenuBar.add_cascade(label="Fichier", menu=filemenu)
 
     helpmenu = Menu(MenuBar, tearoff=0)
-    helpmenu.add_command(label="Read Me", command=lambda:messagebox.showinfo("Read Me", "Ajouter le contenu du Read Me"))
+
+    def read_me():
+        file = open("./README.txt", 'r')
+        alltext = file.read()
+        file.close()
+        messagebox.showinfo("Read Me", alltext)
+
+    helpmenu.add_command(label="Read Me", command=read_me)
     helpmenu.add_command(label="Créatrices", command=lambda:messagebox.showinfo("Créatrices", "Cette application a été dévelopée par Mona Le Coz et Morgane Mulot"))
     MenuBar.add_cascade(label="A propos",menu=helpmenu)
 
