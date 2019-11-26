@@ -10,10 +10,13 @@ if sys.version_info.major == 2:
     print(sys.version)
     from Tkinter import *
     import tkFileDialog as filedialog
+    import tkMessageBox as messagebox
 else:
     print(sys.version)
     from tkinter import *
     from tkinter import filedialog
+
+
 
 import collections
 
@@ -164,12 +167,12 @@ class choix :
             f = cursor.execute("SELECT {0}{1} FROM frequencies WHERE octave = {2}".format(self.v.get()[0], "sharp", int(self.boiteNum.get()))).fetchone()
         else:
             f = cursor.execute("SELECT {0} FROM frequencies WHERE octave = {1}".format(self.v.get(), int(self.boiteNum.get()))).fetchone()
-        
+
         x = wav_sinus("./noteCréée/"+self.titre, f[0], 8000, float(self.duration.get()))
 
     def lireNote(self):
         subprocess.call(["aplay", "./noteCréée/"+self.titre])
-        
+
 
     def packing(self):
         self.label_Choix.pack()
@@ -185,6 +188,8 @@ class choix :
         self.label2.grid(row=1, column = 5, pady=2, padx=5)
         self.lire.grid(row=1, column = 6, pady=2, padx=5)
 
+
+
 if __name__ == "__main__" :
     root = Tk()
 
@@ -195,4 +200,18 @@ if __name__ == "__main__" :
     new.packing()
     piano=Piano(root,octaves)
     piano.packing()
+
+    #MENU
+    MenuBar= Menu(root)
+    filemenu = Menu(MenuBar, tearoff=0)
+    filemenu.add_command(label="Quitter",command=lambda:root.quit() if messagebox.askyesno("Quitter", "Etes-vous sûr de vouloir quitter?") else None)
+    MenuBar.add_cascade(label="Fichier", menu=filemenu)
+
+    helpmenu = Menu(MenuBar, tearoff=0)
+    helpmenu.add_command(label="Read Me", command=lambda:messagebox.showinfo("Read Me", "Ajouter le contenu du Read Me"))
+    helpmenu.add_command(label="Créatrices", command=lambda:messagebox.showinfo("Créatrices", "Cette application a été dévelopée par Mona Le Coz et Morgane Mulot"))
+    MenuBar.add_cascade(label="A propos",menu=helpmenu)
+
+    root.config(menu=MenuBar)
+
     root.mainloop()
