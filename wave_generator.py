@@ -116,7 +116,7 @@ if __name__ == "__main__" :
         file.close()
         messagebox.showinfo("Read Me", alltext)
 
-    helpmenu.add_command(label="Read Me", command=read_me))
+    helpmenu.add_command(label="Read Me", command=read_me)
     helpmenu.add_command(label="Créatrices", command=lambda:messagebox.showinfo("Créatrices", "Cette application a été dévelopée par Mona Le Coz et Morgane Mulot"))
     MenuBar.add_cascade(label="A propos",menu=helpmenu)
 
