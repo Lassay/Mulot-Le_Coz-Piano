@@ -42,7 +42,7 @@ class Generator(Subject) :
             obs.update()
 
 
-class Screen(Observer) :
+class Screen_sig(Observer) :
     def __init__(self,parent,bg="white",width=600,height=300):
         self.canvas=Canvas(parent,bg=bg,width=width,height=height)
         self.signal={}
@@ -110,7 +110,8 @@ if  __name__ == "__main__" :
     root=Tk()
     root.title("Piano : Mulot Le Coz")
     model=Generator()
-    view=Screen(root)
+
+    view=Screen_sig(root)
     view.grid(4)
 
     model.attach(view)
