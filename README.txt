@@ -1,3 +1,4 @@
+
 Notre projet fonctionne en python 2.7 et peut être en python 3 mais nous n'avons pas testé ce dernier.
 
 Le projet global se lance avec piano.py (Lors du premier lancement, les notes mettent un peu de temps à ce générer)
@@ -9,4 +10,5 @@ Ce programme lance dans une même interface trois programmes indépendants :
  - frequencies_MVC.py génère la visualisation du signal de la note joué.
 
  - keyboard.py génère les touches de piano. En cliquant, nous pouvons voir le nom de la note jouée au dessus du clavier. 
+
 

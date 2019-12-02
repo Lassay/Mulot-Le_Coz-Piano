@@ -15,7 +15,7 @@ else:
 
 from observer import *
 
-class Generator(Subject) :
+class Generator(Subject) :      #MODEL
     def __init__(self):
         self.a,self.f,self.p=1.0,2.0,0.0
         self.signal=[]
@@ -42,7 +42,7 @@ class Generator(Subject) :
             obs.update()
 
 
-class Screen(Observer) :
+class Screen_sig(Observer) :    #VUE
     def __init__(self,parent,bg="white",width=600,height=300):
         self.canvas=Canvas(parent,bg=bg,width=width,height=height)
         self.signal={}
@@ -110,7 +110,8 @@ if  __name__ == "__main__" :
     root=Tk()
     root.title("Piano : Mulot Le Coz")
     model=Generator()
-    view=Screen(root)
+
+    view=Screen_sig(root)
     view.grid(4)
 
     model.attach(view)
