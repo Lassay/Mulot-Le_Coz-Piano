@@ -46,10 +46,10 @@ class Screen_wav(Observer) :    #VUE
         self.duration=Scale(self.frame, orient='horizontal', from_=0, to=4,
                                 resolution=0.1, tickinterval=1, length=150)
         self.titre = ''
-        self.creer=Button(self.frame, text="créer", command=lambda:Controller.creerNote(self.note.get(), self.boxOctave.get(), self.duration.get()))
+        self.creer=Button(self.frame, text="créer", command=lambda:ctrl.creerNote(self.note.get(), self.boxOctave.get(), self.duration.get()))
         self.box = Listbox(self.frame)
 
-        self.lire=Button(self.frame, text="Lire", command=Controller.lireNote)
+        self.lire=Button(self.frame, text="Lire", command=lambda:ctrl.lireNote())
 
         self.choixAccord=Label(self.frame, text="Choisissez un accord à créer :")
         self.chord1 =StringVar()
@@ -70,10 +70,10 @@ class Screen_wav(Observer) :    #VUE
         self.numChord3 = IntVar()
         self.numChord3.set(0)
         self.boxOctaveChord3 = Spinbox(self.frame,from_=0,to=8,increment=1,textvariable=self.numChord3,width=5)
-        self.creerChord=Button(self.frame, text="créer", command=lambda:Controller.creerAccord(self.note.get(), self.boxOctave.get(), self.duration.get()))
+        self.creerChord=Button(self.frame, text="créer", command=lambda:ctrl.creerAccord())
         self.boxChords = Listbox(self.frame)
 
-        self.lireChord=Button(self.frame, text="Lire", command=Controller.lireAccord)
+        self.lireChord=Button(self.frame, text="Lire", command=lambda:ctrl.lireAccord())
         self.titreChord=''
 
         self.espaceVide = Label(self.frame, text="")
@@ -131,33 +131,33 @@ class Choix(Subject) : #MODEL
         self.observers=[]
 
      def creerNote(self,note,octave,duration):
-        self.titre = titre = str(note)+str(octave)+"_"+str(duration)+".wav"
+        view.titre = titre = str(note)+str(octave)+"_"+str(duration)+".wav"
         self.notify()
         connect = sqlite3.connect("frequencies.db")
         cursor = connect.cursor()
                 # Gerer les sharp :
-        if (self.note.get() == 'C#' or self.note.get() == 'D#' or self.note.get() == 'F#' or self.note.get() == 'G#' or self.note.get() == 'A#'):
-            f = cursor.execute("SELECT {0}{1} FROM frequencies WHERE octave = {2}".format(self.note.get()[0], "sharp", int(self.boxOctave.get()))).fetchone()
+        if (note == 'C#' or note == 'D#' or note == 'F#' or note == 'G#' or note == 'A#'):
+            f = cursor.execute("SELECT {0}{1} FROM frequencies WHERE octave = {2}".format(note[0], "sharp", int(octave))).fetchone()
         else:
-            f = cursor.execute("SELECT {0} FROM frequencies WHERE octave = {1}".format(self.note.get(), int(self.boxOctave.get()))).fetchone()
+            f = cursor.execute("SELECT {0} FROM frequencies WHERE octave = {1}".format(note, int(octave))).fetchone()
 
-        x = wav_sinus("./noteCréée/"+self.titre, f[0], 8000, float(self.duration.get()))
+        x = wav_sinus("./noteCréée/"+view.titre, f[0], 8000, float(duration))
 
      def creerAccord(self):
-        data1,framerate1 = open_wav('Sounds/'+str(self.chord1.get())+str(self.boxOctaveChord1.get())+'.wav')
-        data2,framerate2 = open_wav('Sounds/'+str(self.chord2.get())+str(self.boxOctaveChord2.get())+'.wav')
-        data3,framerate3 = open_wav('Sounds/'+str(self.chord3.get())+str(self.boxOctaveChord3.get())+'.wav')
+        data1,framerate1 = open_wav('Sounds/'+str(view.chord1.get())+str(view.boxOctaveChord1.get())+'.wav')
+        data2,framerate2 = open_wav('Sounds/'+str(view.chord2.get())+str(view.boxOctaveChord2.get())+'.wav')
+        data3,framerate3 = open_wav('Sounds/'+str(view.chord3.get())+str(view.boxOctaveChord3.get())+'.wav')
         data = []
         for i in range(len(data1)):
             data.append((1/3.0)*(data1[i]+data2[i]+data3[i]))
-        self.titreChord = str(self.chord1.get())+str(self.boxOctaveChord1.get())+str(self.chord2.get())+str(self.boxOctaveChord2.get())+str(self.chord3.get())+str(self.boxOctaveChord3.get())+'.wav'
+        view.titreChord = str(view.chord1.get())+str(view.boxOctaveChord1.get())+str(view.chord2.get())+str(view.boxOctaveChord2.get())+str(view.chord3.get())+str(view.boxOctaveChord3.get())+'.wav'
         self.notify()
-        save_wav('noteCréée/'+self.titreChord,data,framerate1)
+        save_wav('noteCréée/'+view.titreChord,data,framerate1)
 
      def notify(self):
         for obs in self.observers:
-            obs.updateBox(self.titre)
-            obs.updateBoxChord(self.titreChord)
+            obs.updateBox(view.titre)
+            obs.updateBoxChord(view.titreChord)
 
 class Controller :
     def __init__(self,parent,model,view) :
@@ -173,10 +173,10 @@ class Controller :
         model.creerAccord()
 
     def lireNote(self):
-        subprocess.call(["aplay", "./noteCréée/"+(self.box.get(self.box.curselection()))])
+        subprocess.call(["aplay", "./noteCréée/"+(view.box.get(view.box.curselection()))])
 
     def lireAccord(self):
-        subprocess.call(["aplay", "./noteCréée/"+(self.boxChords.get(self.boxChords.curselection()))])
+        subprocess.call(["aplay", "./noteCréée/"+(view.boxChords.get(view.boxChords.curselection()))])
 
 
 
